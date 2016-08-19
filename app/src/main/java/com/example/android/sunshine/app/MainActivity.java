@@ -1,19 +1,24 @@
+/*
+ * Copyright (C) 2014 The Android Open Source Project
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package com.example.android.sunshine.app;
 
-import android.support.v7.app.ActionBarActivity;
-import android.support.v4.app.Fragment;
 import android.os.Bundle;
-import android.view.LayoutInflater;
+import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
-import android.widget.ListView;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
 
 public class MainActivity extends ActionBarActivity {
@@ -24,7 +29,7 @@ public class MainActivity extends ActionBarActivity {
         setContentView(R.layout.activity_main);
         if (savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction()
-                    .add(R.id.container, new PlaceholderFragment())
+                    .add(R.id.container, new ForecastFragment())
                     .commit();
         }
     }
@@ -51,55 +56,4 @@ public class MainActivity extends ActionBarActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    /**
-     * A placeholder fragment containing a simple view.
-     */
-    public static class PlaceholderFragment extends Fragment {
-
-        public PlaceholderFragment() {
-        }
-
-        @Override
-        public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                                 Bundle savedInstanceState) {
-
-            //Create dummy data that we will use to populate the list view in
-            //R.layout.list_item_forecast
-
-            String[] dummys = {
-                    "Friday - Sunny - 99/85",
-                    "Saturday - Sunny - 101/55",
-                    "Sunday - Sunny - 99/85",
-                    "Monday - Sunny - 101/55",
-                    "Tuesday - Sunny - 99/85",
-                    "Wednesday - Sunny - 101/55"
-            };
-            List<String> weekForecast = new ArrayList<String>(Arrays.asList(dummys));
-
-            /*Now that we have the dummy data, we create an array adapter that will
-            * take data from any source and populate the listView attached to it*/
-            ArrayAdapter<String> dummysAdapter = new ArrayAdapter<String>(
-                    //The current context
-                    getActivity(),
-                    // ID of list item layout
-                    R.layout.list_item_forecast,
-                    // ID of the textview to populate
-                    R.id.list_item_forecast_textview,
-                    // Forecast source data (dummy data so far)
-                    weekForecast);
-
-
-
-
-
-            View rootView = inflater.inflate(R.layout.fragment_main, container, false);
-
-            //Initialize forecastList list view and bind it to dummyAdapter
-            ListView forecastList = (ListView) rootView.findViewById(R.id.listview_forcast);
-            forecastList.setAdapter(dummysAdapter);
-
-
-            return rootView;
-        }
-    }
 }
