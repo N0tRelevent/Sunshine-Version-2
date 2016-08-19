@@ -8,6 +8,12 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 
 public class MainActivity extends ActionBarActivity {
@@ -56,7 +62,43 @@ public class MainActivity extends ActionBarActivity {
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                                  Bundle savedInstanceState) {
+
+            //Create dummy data that we will use to populate the list view in
+            //R.layout.list_item_forecast
+
+            String[] dummys = {
+                    "Friday - Sunny - 99/85",
+                    "Saturday - Sunny - 101/55",
+                    "Sunday - Sunny - 99/85",
+                    "Monday - Sunny - 101/55",
+                    "Tuesday - Sunny - 99/85",
+                    "Wednesday - Sunny - 101/55"
+            };
+            List<String> weekForecast = new ArrayList<String>(Arrays.asList(dummys));
+
+            /*Now that we have the dummy data, we create an array adapter that will
+            * take data from any source and populate the listView attached to it*/
+            ArrayAdapter<String> dummysAdapter = new ArrayAdapter<String>(
+                    //The current context
+                    getActivity(),
+                    // ID of list item layout
+                    R.layout.list_item_forecast,
+                    // ID of the textview to populate
+                    R.id.list_item_forecast_textview,
+                    // Forecast source data (dummy data so far)
+                    weekForecast);
+
+
+
+
+
             View rootView = inflater.inflate(R.layout.fragment_main, container, false);
+
+            //Initialize forecastList list view and bind it to dummyAdapter
+            ListView forecastList = (ListView) rootView.findViewById(R.id.listview_forcast);
+            forecastList.setAdapter(dummysAdapter);
+
+
             return rootView;
         }
     }
