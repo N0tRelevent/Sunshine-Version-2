@@ -25,9 +25,11 @@ package com.example.android.sunshine.app;
  *                                                                  int numDays)
  *          into doInBackground
  *          -> implemented returning json string array
- * 4 Aug
+ * 4 Aug 25 16 03:19AM implemented items selection
  ****************************************************************************************/
 
+import android.content.Context;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -40,8 +42,10 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -62,11 +66,15 @@ import java.util.List;
  * A Forecast fragment containing a simple view.
  */
 public class ForecastFragment extends Fragment {
+    //private Context context = getActivity();
+
 
     ArrayAdapter<String> mForecastAdapter;
 
+
     public ForecastFragment() {
     }
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -129,6 +137,20 @@ public class ForecastFragment extends Fragment {
         // Get a reference to the ListView, and attach this adapter to it.
         ListView listView = (ListView) rootView.findViewById(R.id.listview_forecast);
         listView.setAdapter(mForecastAdapter);
+
+
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                //Toast.makeText(getActivity(),
+                //mForecastAdapter.getItem(position).toString(),
+                //Toast.LENGTH_LONG).show();
+                String weatherData = mForecastAdapter.getItem(position);
+                Intent intent = new Intent(getActivity(), DetailActivity.class)
+                        .putExtra(Intent.EXTRA_TEXT, weatherData);
+                startActivity(intent);
+            }
+        });
 
 
         return rootView;
@@ -354,21 +376,31 @@ public class ForecastFragment extends Fragment {
         @Override
         protected void onPostExecute(String[] strings) {
             super.onPostExecute(strings);
+            String LOG_TAG = this.getClass().getSimpleName();
             //Create a list string from string array given by doInBackground
-            List<String> weekForecast = new ArrayList<String>(Arrays.asList(strings));
+            //List<String> weekForecast = new ArrayList<String>(Arrays.asList(strings));
 
 
             // Now that we have some forecast data, create an ArrayAdapter.
             // The ArrayAdapter will take data from a source (like our dummy forecast) and
             // use it to populate the ListView it's attached to.
-            mForecastAdapter =
-                    new ArrayAdapter<String>(
-                            getActivity(), // The current context (this activity)
-                            R.layout.list_item_forecast, // The name of the layout ID.
-                            R.id.list_item_forecast_textview, // The ID of the textview to populate.
-                            weekForecast);
+//            mForecastAdapter =
+//                    new ArrayAdapter<String>(
+//                            getActivity(), // The current context (this activity)
+//                            R.layout.list_item_forecast, // The name of the layout ID.
+//                            R.id.list_item_forecast_textview, // The ID of the textview to populate.
+//                            weekForecast);
 
             // Get a reference to the ListView, and attach this adapter to it.
+            if(strings != null) {
+                mForecastAdapter.clear();
+                for (String dayForecast : strings) {
+                    mForecastAdapter.add(dayForecast);
+                }
+            } else
+            {
+                Log.e(LOG_TAG,"item passed to post null");
+            }
             ListView listView = (ListView)getView().findViewById(R.id.listview_forecast);
             listView.setAdapter(mForecastAdapter);
         }
