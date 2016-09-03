@@ -18,7 +18,11 @@ package com.example.android.sunshine.app;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.CursorLoader;
+import android.support.v4.content.Loader;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -32,9 +36,12 @@ import com.example.android.sunshine.app.data.WeatherContract;
 /**
  * Encapsulates fetching the forecast and displaying it as a {@link ListView} layout.
  */
-public class ForecastFragment extends Fragment {
+public class ForecastFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
 
     private ForecastAdapter mForecastAdapter;
+
+    // If non-null, this is the current filter the user has provided.
+    String mCurFilter;
 
     public ForecastFragment() {
     }
@@ -44,6 +51,18 @@ public class ForecastFragment extends Fragment {
         super.onCreate(savedInstanceState);
         // Add this line in order for this fragment to handle menu events.
         setHasOptionsMenu(true);
+
+    }
+
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        // prepare the loader. Either re-connect with an existing one,
+        // or start a new one.
+        getLoaderManager().initLoader(0, null, this);
+        setHasOptionsMenu(true);
+
+
     }
 
     @Override
@@ -101,5 +120,34 @@ public class ForecastFragment extends Fragment {
     public void onStart() {
         super.onStart();
         updateWeather();
+    }
+
+    @Override
+    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+        Uri weatherUri = WeatherContract.WeatherEntry.CONTENT_URI;
+
+        return CursorLoader(
+                getActivity(),
+                weatherUri,
+                new String [] {
+                        WeatherContract.WeatherEntry.
+                })
+    }
+
+
+
+    @Override
+    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+        // Swap the new Cursor in. (the framework will take care of closing the
+        // old cursor once we return).
+        mForecastAdapter.swapCursor(data);
+    }
+
+    @Override
+    public void onLoaderReset(Loader<Cursor> loader) {
+        // This is called when the last Cursor provided to the OnLoadFinished()
+        // above is about to be closed. We need to make sure we are no
+        // longer using it.
+        mForecastAdapter.swapCursor(null);
     }
 }
